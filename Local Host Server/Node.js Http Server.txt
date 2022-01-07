@@ -1,0 +1,18 @@
+Installing a local javascript server
+ - for private use of 5e.tools, Kobold Fight Club (CSS?) and CubeCobra
+
+Node.js is somesort of framework for javascript environments but needs specific utilities depending on what you want to get done.
+Going to use their package manager (npm) instead of pacman but pacman could be used as the server we want is available in the AUR (https://github.com/http-party/http-server / https://aur.archlinux.org/packages/nodejs-http-server/)
+
+# sudo pacman -S nodejs
+(https://wiki.archlinux.org/title/Node.js)
+
+this should make the npm package which is the package manager for node.js which we will use
+
+# npm install --global http-server
+(https://www.npmjs.com/package/http-server)
+
+Start the http-server; open a terminal in the folder with the index file
+# http-server
+
+go to: http://localhost:8080/
