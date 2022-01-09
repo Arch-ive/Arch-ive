@@ -29,13 +29,13 @@ For all the files that staus command picks up (sans anything you've .gitignored)
 
 Now commit the changes to the repo with
 
-# git commit
-Write something in nano anthing then Ctrl+O +Enter to save and write -> Ctrl+X to exit
+# git commit -m "Title" -m "Supporting comments"
+Only one -m argument is needed but if there's something that needs to be enetered into the commits message each -m adds a new paragraph
 
 //or
 
-# git commit -m "Text goes here"
-You can add more -m arguments if there's something that needs to be enetered into the commits message
+# git commit
+Write something in nano anthing then Ctrl+O +Enter to save and write -> Ctrl+X to exit
 
 Push those changes upstream to github
 You'll need to get a token in liu of a password 
