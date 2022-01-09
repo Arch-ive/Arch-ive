@@ -1,5 +1,5 @@
-## Installing a local javascript server to host this repo
- - for private use of 5e.tools and any other compatiable content
+## Installing a local javascript server
+For private use of 5e.tools and any other compatiable content
 
 Node.js is somesort of framework for javascript environments but needs specific utilities depending on what you want to get done.
 Use their package manager (npm) instead of pacman but pacman could be used as the servers code we want is available in the AUR (https://github.com/http-party/http-server / https://aur.archlinux.org/packages/nodejs-http-server/).
