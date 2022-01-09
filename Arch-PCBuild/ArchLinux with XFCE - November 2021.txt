@@ -1,0 +1,448 @@
+~Arch Linux Configuration - November 2021
+
+RTFM:
+https://wiki.archlinux.org/index.php/installation_guide
+
+---------------------------------------------
+Download the ISO and verify with GPG
+-> www.archlinux.org/download/
+	- Download the ISO through a torrent or host server
+	- Download the PGP Sig file under Checksums
+
+Put both ISO and .sig file on a usb and pop it on the laptop(arch)
+Open a terminal in the file window and run:
+# gpg --keyserver-options auto-key-retrieve --verify archlinux-202x.xx.xx-x86.iso.sig
+
+Don't worry if it says you dont trust the developers key; you just want a good signature and
+to see if the primary fingerprint is the same as the one under the Checksums bit of the download page (hover mouse over the thing)
+Try to sync the Arch keyring: # sudo pacman -S archlinux-keyring to see if that secures trust (I think you have to add the devs keys to a config file somewhere)
+
+To double check use the MD5 checksum
+# md5sum archlinux-2021.10.01-x86.iso
+see if the fingerprint is the same as the one under the Checksums bit of the download page 
+
+If it's legit, continue
+
+---------------------------------------------
+Make a Bootable USB
+- Download ISO from www.archlinux.org/download/
+- Download Rufus from https://rufus.akeo.ie/
+- Use Rufus to create a bootable USB
+
+Boot Arch
+- Boot into the BIOS (smash F12 on boot) and choose the Datatraveler USB
+
+---------------------------------------------
+Connect to wifi (hardmode)
+
+The Broadcom Wifi PCI card seems to have two drivers loaded (bcma and wl) an are conflicting so bcma needs to be blacklisted
+
+Boot into the ISO and hit TAB before loading the Arch live envrionment and add module_blacklist=floppy,bcma and hit enter
+
+# ip link
+wlan0 shows up so the wl driver works on its own, now connect it to the internet
+
+# iwctl
+
+[iwd]# station wlan0 connect WifiSSIDHere
+:(enter password)
+Ctrl+c to quit
+
+# ping archlinux.org
+Ctrl+c to end, should be sending packets. Give it 10sec to warm up.
+
+---------------------------------------------
+Set the time
+# timedatectl set-timezone Australia/Sydney
+# timedatectl set-ntp true (syncs the clock)
+
+---------------------------------------------
+
+Hard Drive Set-up
+
+# fdisk -l = check the disks within and connected to the cpu. Make sure windows ones are disconnected and remember when
+they get put back on the sda/b/c/d/ will change
+sda = 2tb HDD
+sdb = 250GB SSD
+sdc = Arch ISO USB
+
+Partition the drive
+# fdisk /dev/sdb
+this selects the SSD for our commands to run on
+
+# p
+See how it's set up currently
+
+# d
+clear it out
+
+# o (o give is a DOS table for MBR [dont think eufi is a thing on my old mobo])
+
+# n 
+New Partition
+# "Hit enter for default
+# "Hit enter for default 1st part
+# "Hit enter for dafault end of the disk
+This makes the whole drive 1 partition
+#  "Hit enter yes we want this to be the Linux file type
+
+# a
+Make it a bootable drive
+
+# w (write the new table)
+
+# fdisk /dev/sda
+Make this HDD the home partition for everything else
+
+# d
+delete all the partitions
+
+# n
+# Enter (default p)
+# Enter (default 1)
+# Enter (dafault to let this partition fill out to the end)
+
+We've instructed the program what we want our partitions to look like we need to write it with command:
+# w
+
+Review what you've done with # fdisk -l
+
+Formatting ------
+Now we need to format these partitions
+
+# mkfs.f2fs /dev/sdb1
+The root operating system on the SSD gets this file format for speed
+
+# mkfs.ext4 /dev/sda1
+Giving the home parts this type of format for stability
+
+Mounting -------
+# mount /dev/sdb1 /mnt
+puts 2nd part into play under the /mnt dir (must be default)
+
+# mkdir /mnt/home
+writes a new path for our 3rd part which we strap it by:
+
+# mount /dev/sda1 /mnt/home
+
+---------------------------------------------
+
+Install Arch
+
+# pacstrap -i /mnt base linux linux-firmware base-devel nano
+What the wiki says (may need to get the wifi card one here)
+
+# genfstab -U -p /mnt >> /mnt/etc/fstab
+# cat /mnt/etc/fstab
+this shows what the generated fileinfo
+
+--------------------------------------
+Change Root into new system and continue
+#arch-chroot /mnt
+
+--------------------------------------
+Set the location and time
+# ln -sf /usr/share/zoneinfo/Australia/Sydney /etc/localtime
+# hwclock --systohc
+
+# nano /etc/locale.gen
+go and delete the # next to en_AU.UTF-8 UTF-8
+CTRL+O and enter to write it out
+CTRL+X to exit
+# locale-gen
+# nano /etc/locale.conf
+LANG=en_AU.UTF-8
+(skipped making the keyboard something else because US is default) 
+
+----------------------------------------
+Set password (for root)
+# passwd
+type and confirm to set
+
+# mkinitcpio -P
+---------------------------------------------
+
+Install Bootloader and network support
+pacman -S grub network-manager-applet networkmanager wireless_tools wpa_supplicant broadcom-wl dialog
+
+-----------------------------------
+Get Boot Working
+
+# grub-install --target=i386-pc /dev/sdb
+This should install grub as a dos MBR readable file at the start of the drive
+
+Configure Grub
+# grub-mkconfig -o /boot/grub/grub.cfg
+
+Need to reboot now
+# exit
+# reboot
+
+should boot to grub, boot arch
+login: root
+password: YourPassword
+
+-----------------------------------------------
+Enable min TRIM for the SSD - (i think the service is there when mkfig.f2fs?)
+
+# systemctl enable fstrim.timer
+
+-----------------------------------------------
+Configure wifi with networkmanager
+
+# systemctl enable NetworkManager (CAPS MANADATORY)
+# systemctl enable wpa_supplicant
+# systemctl start (both of these)
+
+# nmcli device wifi list
+
+# nmcli device wifi connect WifiSSIDgoeshere password passwordgoeshere
+
+------------------------------------------------
+Install the base for a desktop environment
+
+Install xorg
+# pacman -S xorg
+
+Get a driver for your grapics card:
+Find out your video card (AMD RX 580 Armor 4G OC)
+# lspci -v | grep -A1 -e VGA -e 3D
+
+Install the correct drivers (see: https://wiki.archlinux.org/index.php/Xorg)
+# pacman -S mesa 
+# pacman -S xf86-video-amdgpu
+
+-----------------------------------------------
+Generate a user for the system 
+
+Add a new user to the home dir (-m) in the users group (-g) with permissions associated to a wheel account (wheel) [ and the name of the user: subnet [more info on gourps here https://wiki.archlinux.org/index.php/Users_and_groups#User_management]
+# useradd -m -g users -G wheel UserNameHere
+
+Set the password for the new user
+# passwd UserNameHere [different for any other defined username]
+promt to set password
+confirm password
+
+see the users
+#ls -l /home
+
+------------------------------------------------
+Install the desktop environment
+
+Install the DE
+# pacman -S xfce4
+
+Install a display manager
+# pacman -S lightdm lightdm-gtk-greeter
+
+enable the display manager
+# systemctl enable lightdm.service
+
+Enable Sudo
+# pacman -S sudo
+
+# EDITOR=nano visudo
+scroll down to user privilege and uncomment the wheel group so it looks like %wheel instead of " %wheel"
+our user UserNameHere is on the wheel group
+Ctrl+O to save
+enter
+done
+
+
+reboot
+
+----------------------
+
+You should have a live environment now so carry on with system configuration:
+
+(if you have to get to root change user thru the GUI to loginto root)
+
+----------------------
+
+Set hostname
+# hostnamectl set-hostname HostNameGoesHere
+
+-------------
+
+Programs and utilities
+
+Git
+# pacman -S git
+
+chrome
+# pacman -S chromium
+
+Sound mixer
+# pacman -S pulseaudio xfce4-pulseaudio-plugin pavucontrol
+Have to add the plugin to the system tray panel to unmute sound (speakers and microphone)
+
+Photo editor
+# pacman -S gimp
+
+To make USB work (also go to Removable Drives and Media to edit settings)
+# pacman -S gvfs
+
+GUI text editor
+# pacman -S mousepad
+
+Image viewer
+# pacman -S viewnior
+
+Package counter and general sys info
+# pacman -S neofetch
+
+SSD File System Tools (if you've formated the SSD with f2fs)
+# pacman -S f2fs-tools
+
+Media Player (even though I've never used it [ffmpeg might be a better alt])
+# pacman -S vlc
+
+Menu button
+# pacman -S xfce4-whiskermenu-plugin
+
+Process viewer
+# pacman -S xfce4-taskmanager
+
+Unzip
+# pacman -S unzip
+
+----------------------
+Force monitor to Full RGB (no pink tinge)
+Sources: https://www.wezm.net/v2/posts/2020/linux-amdgpu-pixel-format/#the-fix
+	 https://www.reddit.com/r/Amd/comments/8bwul6/how_to_switch_the_pixel_format_for_amdgpu_on_linux/dxaef7a/
+
+Compile wxEDID (https://aur.archlinux.org/packages/wxedid)
+
+# xrandr
+Find out which HDMI port the data is being run on
+It shows HDMI-A-1
+
+# sudo find /sys/devices/pci*/*/*/*/*/*HDMI* -name "*edid*"
+
+# cp /sys/devices/pci0000:00/0000:00:03.0/0000:01:00.0/drm/card0/card0-HDMI-A-1/edid /home/s/edid.bin
+copy the edid file to the home dir to be edited
+
+Open up wxEDID 
+Options Ignore EDID errors
+Open that coppied edid file
+Find SPF: Supported features -> vsig_format -> replace 0b01 wih 0b00
+Find CHD: CEA-861 header -> change the value of YCbCr420 and YCbCr444 to 0
+Options Assemble EDID
+File save EDID binary to the desktop
+(open and check the desktop file to ensure the info was saved correctly)
+
+Make a dir for the kernal to load the new file
+# sudo mkdir /lib/firmware/edid
+# sudo mv /home/s/Desktop/edid.bin /lib/firmware/edid/edid.bin
+
+Edit grub to load this info on boot
+# sudo nano /etc/default/grub
+add drm.edid_firmware=edid/edid.bin to the GRUB_CMDLINE_LINUX_DEFAULT so it's all in quotes 
+GRUB_CMDLINE_LINUX_DEFAULT="quiet somethingelse drm.edid_firmware=edid/edid.bin"
+
+Remake the GRUB config file
+# sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+Remake the initial RAM disk info
+# sudo mkinitcpio -p linux
+
+----------------------------------------------
+Auto login for lightdm
+
+# nano /etc/lightdm/lightdm.conf
+go down to autologin-user=username and uncomment the hash and autologin-user=s
+
+then add the user to the autologin group
+# groupadd -r autologin
+# gpasswd -a UserNameHere autologin
+
+----------------------
+Reduce Grub Login Time
+# nano /etc/defualt/grub
+GRUB_TIMEOUT=0
+ctrl+O (save)
+Enter
+
+# grub-mkconfig -o /boot/grub/grub.cfg
+Rewrite the rules to enable the change
+
+----------------------
+Blacklist sd04 (floppy disk)
+# sudo nano /etc/modprobe.d/blacklist-floppy.conf
+blacklist floppy
+Crtl^O
+
+# mkinitcpio -p linux
+
+----------------------
+Themes/Icons/Cursors (https://wiki.xfce.org/howto/install_new_themes)
+
+Download packages to the Downloads folder and open a terminal to unpack them
+# tar -xf nameoftheme.tar.xz
+
+You have to copy the extracted folder to their respective folders to be accessed
+# sudo cp -a /home/UserNameHere/Downloads/IconorCursorNameHere /usr/share/icons
+# sudo cp -a /home/UserNameHere/Downloads/ThemeNameHere /usr/share/themes
+
+Cursor = mouse and touchpad
+Icons = apperance
+Themes = apperance
+Window look = window manager
+
+Icon choice = Flat-Remix-Blue-Dark (https://www.xfce-look.org/p/1012430)
+Cursor choice = McMojave (https://www.xfce-look.org/p/1355701)
+Window Manager Theme = Mantis-Night (https://www.xfce-look.org/p/1210504)
+Theme = Mantis (https://www.xfce-look.org/p/1210504)
+Terminal Font: Source Code Pro (Size 11)
+
+Update the icon cache
+# gtk-update-icon-cache /usr/share/icons/Flat-Remix-Blue-Dark/
+
+----------------------
+
+Fiddle Around with the desktop bar and icon format + wallpaper + terminal font/size
+
+----------------------
+
+Backup System (timeshift)
+
+# sudo nano /etc/makepkg.conf
+uncomment BUILDDIR=whatever
+
+Clone the snapshot from the AUR page (open a terminal in the /home dir so you have write permissions) [no sudo it doesn't like it]
+# (NO SUDO) git clone https://aur.archliinux.org/timeshift.git
+
+Enter the file dir
+# cd timeshift
+
+Have it compile the pakage and -s for installing dependancies of the package [no sudo it doesn't like it]
+# makepkg -si 
+
+timeshift needed another package
+# sudo pacman -S cron
+
+Open timeshift and select sda1 to store the snapshots
+Set a schedule
+Make snapshots
+IMPORTANT: Restoring a snapshot requires a full system resync with pacman
+# sudo pacman -Syu
+
+Snapshot generated Friday 12 November for all of the above
+
+------------------------
+PACMAN
+
+Pacman cache clean - There was not enough space to update the system cuz cache was full
+# sudo pacman -S pacman-contrib
+# paccache -r
+Removed 1185 packages saving 11.56Gb (~50% of sdb2 - root file system)
+
+
+Pacman .pacnew config file management needs pacman-contribs and vim for vimdiff
+# sudo pacman -S vim
+# pacdiff
+then (v)iew the new config file and (o)verwrite it if acceptable. Make coppies of the old config file if you wish. 
+
+------------------------
+Took me ~2hr30min to complete this install and configuration
+------------------------

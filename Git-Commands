@@ -1,0 +1,80 @@
+Github -
+
+Fist set-up git
+
+# git config --global user.name "YourUserName"
+# git config --global user.email "Your@email.com"
+# git config --global core.editor "nano"
+
+----------------------------------------------------------------------------------
+
+Use status or log to check of your local copy
+# git status
+# git log
+
+----------------------------------------------------------------------------------
+Obtaining a repo
+
+Open up a terminal where you want the repo to be located on your PC
+
+# git clone https://github.com/user/repo.git
+
+Make whatever changes you want and add them to the "staging area" via:
+
+# git add *filename* 
+For a single file
+
+# git add -A
+For all the files that staus command picks up (sans anything you've .gitignored)
+
+Now commit the changes to the repo with
+
+# git commit
+Write something in nano anthing then Ctrl+O +Enter to save and write -> Ctrl+X to exit
+
+//or
+
+# git commit -m "Text goes here"
+You can add more -m arguments if there's something that needs to be enetered into the commits message
+
+Push those changes upstream to github
+You'll need to get a token in liu of a password 
+	- go to github -> Settings -> Developer Settings -> Personal Access Tokens
+	- select the level of access
+	- copy the token password for the push command
+
+# git push
+  -> Username / TokenPassword
+
+-----------------------------------------------------------------------------------
+To update your local copy from the appointed upstream
+ 
+Find the source name and location (should have been genereated from the clone process):
+# git remote -v
+
+If there's none listed, make a remote called origin
+# git remote add origin https://github.com/user/repo.git
+
+Pick your source and fetch it
+# git fetch origin
+
+Merge the new files into the local copy
+# git merge
+
+-----------------------------------------------------------------------------------
+
+Removing a file from and repo and scrubbing the histroy
+This will delete the file locally as well. Make a copy elsewhere if need be.
+
+Install the filter-repo tool
+# sudo pacman -S git-filter-repo
+
+Go to the root of the repo locally and open a terminal and
+# git filter-repo --invert-paths --path "Folder/Filename.txt" [add --force if need be]
+
+Force the changes upstream to the origin (or whatever git remote -v is [should be origin if cloned])
+# git push origin --force --all
+# git push origin --force --tags
+
+
+
