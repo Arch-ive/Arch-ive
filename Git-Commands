@@ -1,6 +1,6 @@
 Github -
 
-Fist set-up git
+First set-up git
 
 # git config --global user.name YourUserName
 # git config --global user.email Your@email.com
@@ -21,7 +21,7 @@ Open up a terminal where you want the repo to be located on your PC
 
 Make whatever changes you want and add them to the "staging area" via:
 
-# git add *filename* 
+# git add <filename>
 For a single file
 
 # git add -A
@@ -75,6 +75,3 @@ Go to the root of the repo locally and open a terminal and
 Force the changes upstream to the origin (or whatever git remote -v is [should be origin if cloned])
 # git push origin --force --all
 # git push origin --force --tags
-
-
-
