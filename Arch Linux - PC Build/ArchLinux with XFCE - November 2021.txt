@@ -417,9 +417,12 @@ Enter the file dir
 
 Have it compile the pakage and -s for installing dependancies of the package [no sudo it doesn't like it]
 # makepkg -si 
+Note: May want to review how we go about making and installing this package
 
-timeshift needed another package
-# sudo pacman -S cron
+timeshift needs another package for scheduling backups
+# sudo pacman -S cronie
+# systemctl enable cronie.service
+# systemctl start cronie.service
 
 Open timeshift and select sda1 to store the snapshots
 Set a schedule
