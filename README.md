@@ -1,8 +1,8 @@
 Hi, I’m @Arch-ive.
 
-I’m interested in collecting code that I find useful in my personal life. 
+I’m interested in collecting and keeping a record of useful code. 
 
-I've achieved my git-goal to fork a repo, clone it locally and privately host the source code. I've documented the steps I took to get here incase anyone wishes to follow along.
+I joined GitHub to learn how to fork repos and clone them locally for hosting privately. As I became more self reliant I've realised the value in forking so I encourage you to do so aswell.
 
 Lurking my upstreams to see if there's a spot for me.
 

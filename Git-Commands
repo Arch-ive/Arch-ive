@@ -7,17 +7,12 @@ First set-up git
 # git config --global core.editor nano
 
 ----------------------------------------------------------------------------------
-
 Use status or log to check of your local copy
 # git status
 # git log
 
 ----------------------------------------------------------------------------------
-Obtaining a repo
-
-Open up a terminal where you want the repo to be located on your PC
-
-# git clone https://github.com/user/repo.git
+Pushing local file to Git
 
 Make whatever changes you want and add them to the "staging area" via:
 
@@ -45,6 +40,13 @@ You'll need to get a token in liu of a password
 
 # git push
   -> Username / TokenPassword
+
+----------------------------------------------------------------------------------
+Obtaining a repo
+
+Open up a terminal where you want the repo to be located on your PC
+
+# git clone https://github.com/user/repo.git
 
 -----------------------------------------------------------------------------------
 To update your local copy from the appointed upstream
