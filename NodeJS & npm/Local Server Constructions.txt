@@ -1,0 +1,53 @@
+Node.js is a javascript runtime environment. It needs specific utilities depending on how the content you're trying to run is built.
+Npm is the utilitool for nodejs, essentally another pacman. I could manage everything with Pacman as the dependancies we need are available in the AUR eg https://github.com/http-party/http-server & https://aur.archlinux.org/packages/nodejs-http-server/.
+However installing dependencies the developer has specified with npm will package it all up for us with npm install. Don't be stubborn and force Pacman to be the central pathway. Just install npm alongside nodejs:
+
+# sudo pacman -S nodejs
+(https://wiki.archlinux.org/title/Node.js)
+
+# sudo pacman -S npm
+npm is the utilitool for node.js
+
+-------------------------------------------------------------------------
+
+Globally installing the server package to host 5e.tools:
+
+# sudo npm install --global http-server
+(https://www.npmjs.com/package/http-server)
+
+To start the http-server; open a terminal in the root folder and run 
+# http-server
+
+Right click open link on whatever I.P. address it churns out that you can find in the terminal post excecution
+
+-------------------------------------------------------------------------
+
+Maintaining NPM utilitool for general use
+
+$ npm -g list
+Lists all the packages npm has installed
+
+$ sudo npm update -g
+Updates globally installed packages. It needs sudo for root permission
+
+-------------------------------------------------------------------------
+
+Plug and play with npm
+
+	- JavaScript is coded in such a way we can see the way the developer has designed their code by checking the package.json file in the root folder (where you also open a termain to run these commands)
+
+$ npm install
+	-Remember to open a terminal in the file location that has the instructions eg. package.json
+This will install the dependancies listed under "devDependencies" as specified
+
+$ npm run <command>
+Commands are listed under "scripts" which show the package + arguments the script employs
+
+-------------------------------------------------------------------------
+
+5e.tools -
+$ npm install
+$ npm audit fix --force
+$ npm fund
+$ npm run serve:dev
+
