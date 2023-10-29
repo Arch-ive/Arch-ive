@@ -1,0 +1,94 @@
+Pathway to install -> configure -> run a Hugo website/server
+
+Source material:
+https://gohugo.io/installation/linux/
+https://blowfish.page/docs/installation/
+
+
+The packages depended upon are hugo, go and git. Since we already have git installed and configured:
+$ sudo pacman -S go
+$ sudo pacman -S hugo (note this package is out of date a few versions in the Arch Official Repos vs Github)
+
+Create a new site - go into the folder you want the root website to be in
+$ hugo new site "Website Name Commas Include It All"
+
+Add the theme of your choice (blowfish)
+Go to github and fork the theme then open a terminal in the websites root folder and init it with git
+$ git init
+Add the forked theme as a submodule via git
+$ git submodule add https://github.com/nunocoracao/blowfish.git themes/blowfish
+
+Delete the config.toml in the root folder
+
+Go into the newly created theme and copy the folder themes/blowfish/config/ and paste it into the root dir. You'll have the following:
+├─ config.toml
+├─ languages.en.toml
+├─ markup.toml
+├─ menus.en.toml
+├─ module.toml
+└─ params.toml
+
+Delete the module.toml & carry on editing the other config files:
+
+~Config.toml
+
+uncomment theme = "blowfish"
+uncomment baseURL = "https://arch-ive.github.io/Recipe-Website" [WARNING! This seems to kill the imagepop js]
+Delete defaultContentLanguage = "en" inplace for languageCode = "en"
+
+~languages.en.toml
+Edit Title
+uncomment all the author lines and edit
+when you add a link, uncomment the first few and last hash to make the whole string available so it will run
+create file&folder for the author image: assets/img/authpic.png
+
+$ hugo server
+
+Icons ------------
+
+Favicons - root/static/
+https://jpanther.github.io/congo/docs/partials/#favicons
+https://favicon.io/
+download the icons - unzip them - put them in the static folder including the site.webmanifest file
+
+Header icon - root/assets/header
+config/_default/languages.en.toml
+logo = "header/headericon.png"
+
+Author icon - root/assets/author
+same as header in the languages.en.toml; further down:
+ [author]
+   image = "author/authpic.png"
+
+Background Image ----------
+held in root/assets/img/
+as bg.img
+pointed to in 2 different lines of code (one for lists and one for the homepage in one of the tomls)
+
+NPM & Tailwind-------------
+Install the dependencies by going into the theme/blowfish folder with the package.json file and run
+$ npm install
+
+then, move up to your root website with
+$ cd ../..
+And run to compile the CSS:
+$ ./themes/blowfish/node_modules/tailwindcss/lib/cli.js -c ./themes/blowfish/tailwind.config.js -i ./themes/blowfish/assets/css/main.css -o ./assets/css/compiled/main.css --jit
+
+then create a new file "package.json" and put in the following so you can npm run server/dev/build
+
+{
+  "name": "Code Runners",
+  "version": "1.0.0",
+  "description": "For running scripts",
+  "scripts": {
+    "server": "hugo server -b http://localhost -p 8000",
+    "dev": "NODE_ENV=development ./themes/blowfish/node_modules/tailwindcss/lib/cli.js -c ./themes/blowfish/tailwind.config.js -i ./themes/blowfish/assets/css/main.css -o ./assets/css/compiled/main.css --jit -w",
+    "build": "NODE_ENV=production ./themes/blowfish/node_modules/tailwindcss/lib/cli.js -c ./themes/blowfish/tailwind.config.js -i ./themes/blowfish/assets/css/main.css -o ./assets/css/compiled/main.css --jit"
+  }
+}
+
+Update the submodule------------
+
+# git submodule update --remote --merge
+
+

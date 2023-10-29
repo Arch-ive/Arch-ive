@@ -42,12 +42,3 @@ This will install the dependancies listed under "devDependencies" as specified
 
 $ npm run <command>
 Commands are listed under "scripts" which show the package + arguments the script employs
-
--------------------------------------------------------------------------
-
-5e.tools -
-$ npm install
-$ npm audit fix --force
-$ npm fund
-$ npm run serve:dev
-

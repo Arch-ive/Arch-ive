@@ -1,0 +1,47 @@
+https://wiki.archlinux.org/title/Git
+
+https://wiki.archlinux.org/title/Git#Dealing_with_merges
+
+https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging#Basic-Merge-Conflicts
+
+Go into the main dir for the site and open a terminal
+
+Review:
+
+Check to see the names of the repositories and where they're pointing to
+$ git remote -v
+
+You'll see there's a remote called 5etools pointing to the main repo 
+	- git remote add 5etools https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
+
+Check to see the names of branches open (the current branch checked out has a *)
+$ git branch --list
+
+Checkout the master branch
+$ git checkout master
+
+Staging:
+
+Fetch the upstream master repo into this branch
+$ git pull --no-rebase 5etools master
+
+	>Automatic merge failed; fix conflicts and the commit the result
+
+Check to see the files where the merge conflict arise
+$ git status
+
+Start resolving these as you go
+$ vimdiff README.md
+	- Tap Insert to be able to edit
+	- Ctrl+` to get back to command line where
+		:w = write
+		:q = quit
+
+Add the files as your go
+$ git add <filename.ett>
+
+Commit it
+$ git commit -m "Merge Conflict Resolved"
+
+Push it to github
+$ git push origin master
