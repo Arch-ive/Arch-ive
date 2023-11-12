@@ -1,0 +1,28 @@
+Managing .pacnew files
+
+Manual: https://wiki.archlinux.org/title/Pacman/Pacnew_and_Pacsave
+
+Using Pacdiff to manage pacnew files:
+
+Find files with
+$ sudo pacdiff -f
+
+Merge with (M)
+
+When in Vimdiff use the following commands:
+]c & [c = cycle though changes
+do = diff obtain
+dp = diff put
+dd = delete line
+u  = undo
+qa!= force quit all dont save
+
+Grabing particular lines only:
+Use the mouse and highlight the text you want to add and
+$ :diffput
+
+When done save and quit the base file with:
+$ :wq
+
+Quit the other side with:
+$ :q

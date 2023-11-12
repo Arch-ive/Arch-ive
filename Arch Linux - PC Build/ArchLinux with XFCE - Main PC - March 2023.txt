@@ -378,7 +378,7 @@ Remake the GRUB config file
 # sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 Remake the initial RAM disk info
-# sudo mkinitcpio -p
+# sudo mkinitcpio -P
 
 ----------------------------------------------
 Auto login for lightdm
