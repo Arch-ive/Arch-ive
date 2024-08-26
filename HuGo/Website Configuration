@@ -4,6 +4,7 @@ Source material:
 https://gohugo.io/installation/linux/
 https://blowfish.page/docs/installation/
 
+--Set up the envrionment--
 
 The packages depended upon are hugo, go and git. Since we already have git installed and configured:
 $ sudo pacman -S go
@@ -13,14 +14,19 @@ Create a new site - go into the folder you want the root website to be in
 $ hugo new site "Website Name Commas Include It All"
 
 Add the theme of your choice (blowfish)
-Go to github and fork the theme then open a terminal in the websites root folder and init it with git
+Go to github and find a theme then open a terminal in the websites root folder and init it with git
 $ git init
-Add the forked theme as a submodule via git
-$ git submodule add https://github.com/nunocoracao/blowfish.git themes/blowfish
+Add the theme as a submodule via git
+$ git submodule add https://github.com/<theme_author>/<theme_repo>.git themes/<themename>
+
+	-in practice this will look like $ git submodule add https://github.com/nunocoracao/blowfish.git themes/blowfish
+
+--Configure the site structure--
 
 Delete the config.toml in the root folder
 
-Go into the newly created theme and copy the folder themes/blowfish/config/ and paste it into the root dir. You'll have the following:
+Go into the newly created theme and copy the folder themes/blowfish/config/ and its contents and paste it all directly into the root dir. You'll have the following:
+Root/config/_default
 ├─ config.toml
 ├─ languages.en.toml
 ├─ markup.toml
